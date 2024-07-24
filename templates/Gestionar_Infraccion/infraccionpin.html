@@ -1,0 +1,130 @@
+{% extends 'index.html' %}
+{% block titulo%}
+Infracción
+{% endblock titulo%}
+{% block body %}
+
+
+<style>
+    .thead-custom {
+      background-color: #bcbcbc; /* Cambia esto al color que prefieras */
+      color: black; /* Opcional: cambiar el color del texto */
+  }
+</style>
+
+<div class="card mt-4">
+  
+
+ <div class="card-header text-center" style="background-color: #00008B; color: white;">
+  <br>
+      <strong>DETALLES DE LA BOLETA DE CITACIÓN DE INFRACCIONES DE TRÁNSITO<br></strong>
+      <br>
+    </div>
+
+ <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered" style="background-color:#F4EAE8; width:100%; font-size: xx-small;" frame="void" rules="none" cellspacing="0" cellpadding="0" bordercolor="#ffffff" border="0">
+          <thead class="thead-custom">
+            <tr>
+        <th>Nro. Citación</th>
+        <th>Fecha Infracción</th>
+        <th>Hora Infracción</th>
+        <th>Hora Detención</th>
+        <th>Hora Registro</th>
+        <th>Cédula/Licencia Conductor</th>
+        <th>Nombre Conductor</th>
+        <th>Categoria Licencia</th>
+        <th>Tipo Licencia</th>
+         <th>Placa Vehículo</th>
+        <th>Marca Vehículo</th>
+        <th>Tipo Vehículo</th>
+        <th>Color Vehículo</th>
+           
+      </tr>
+    </thead>
+    <tbody>
+      {%for i in infraccion%}
+        <tr>
+          <td>{{ i.NumeroInfraccion}}</td>
+          <td>{{ i.Fecha_Infraccion }}</td>
+          <td>{{ i.Hora_Infraccion }}</td>
+          <td>{{ i.Hora_Detencion }}</td>
+          <td>{{ i.Hora_Registro }}</td>
+          <td>{{ i.Conductor.CedulaC}}</td>
+          <td>{{ i.Conductor.Nombres}} {{i.Conductor.Apellidos}}</td>
+          <td>{{ i.Conductor.CategoriaLicencia }}</td>
+          <td>{{ i.Conductor.TipoLicencia}}</td>
+          <td>{{ i.Vehiculo.Placa}}</td>
+          <td>{{ i.Vehiculo.Marca}}</td>
+          <td>{{ i.Vehiculo.Tipo}}</td>
+          <td>{{ i.Vehiculo.Color}}</td>
+              
+        </tr>
+      {%endfor%}
+    </tbody>
+  </table>
+  </div>
+  </div>
+
+  <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered" style="background-color:#F4EAE8; width:100%; font-size: xx-small;" frame="void" rules="none" cellspacing="0" cellpadding="0" bordercolor="#ffffff" border="0">
+          <thead class="thead-custom">
+      <tr>
+        <th>Artículo C.O.I.P.</th>
+        <th>Inciso del Artículo</th>
+        <th>Numeral del Artículo</th>
+        <th>Breve Relato de los Hechos</th>
+        <th>Ubicación Infracción</th>
+        <th>Nombre A.C.T.</th>
+        <th>Cédula I. A.C.T.</th>
+        <th>Ver Multimedia</th>
+        <th>Ver Mapa</th>
+        <th>Generar Reporte</th>
+      </tr>
+    </thead>
+    <tbody>
+      {%for i in infraccion%}
+        <tr>
+          <td>{{ i.ArticuloC.Articulo }}</td>
+          <td>{{ i.ArticuloC.Inciso }}</td>
+          <td>{{ i.ArticuloC.Numeral }}</td>
+          <td>{{ i.Descripcion }}</td>
+          <td>{{ i.Ubicacion}}</td>
+          <td>{{ i.Agente.Nombres }} {{ i.Agente.Apellidos }}</td>
+          <td>{{ i.Agente.Cedula }}</td>
+          <td>
+            <div class="text-center">
+              <a href="/Gestionar_Evidencia/listarEvidencia/?Infraccion_Transito={{i.NumeroInfraccion}}"><button style="background-color: #2986cc; padding: 5px 10px; font-size: 12px;"  type="submit" class="btn btn-primary">VER</button></a>
+            </div>
+          </td>
+          <td><a href="/Gestionar_Infraccion/mapaInfraccion/?Infraccion_Transito={{i.NumeroInfraccion}}"><button style="background-color:#8fce00; padding: 5px 10px; font-size: 12px;"  type="submit" class="btn btn-primary">IR</button></a></td>
+          <td><a href="/Gestionar_Infraccion/GeneratePdf/?Infraccion_Transito={{i.NumeroInfraccion}}"><button style="background-color: #e97b09; padding: 5px 10px; font-size: 12px;"  type="submit" class="btn btn-primary">REPORTE</button></a></td>
+
+        </tr>
+      {%endfor%}
+    </tbody>
+  </table>
+</div>
+  </div>
+
+  </div>
+</div>
+    
+    <script>
+function confirmLogout() {
+    if (confirm('¿Estás seguro de cerrar sesión?')) {
+        window.location.href = "{% url 'logout' %}";
+    } else {
+        // Si el usuario cancela, no se realiza ninguna acción
+    }
+}
+</script>
+
+{% if user.groups.all.0.name == "Agenteadmin" %}
+
+
+{% else %}
+<META HTTP-EQUIV="REFRESH" CONTENT="0; http://18.117.245.254/admin">
+{% endif %}
+{% endblock body %}

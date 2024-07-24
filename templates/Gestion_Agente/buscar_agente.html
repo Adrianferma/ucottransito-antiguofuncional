@@ -1,0 +1,99 @@
+{% extends 'index.html' %}
+{% block titulo %}
+Agente de tránsito
+{% endblock titulo %}
+{% block body %}
+
+<style>
+  .thead-custom {
+    background-color: #bcbcbc; /* Cambia esto al color que prefieras */
+    color: black; /* Opcional: cambiar el color del texto */
+  }
+</style>
+
+<div class="card">
+  <div class="card-header text-center" style="background-color: #00008B; color: white;">
+    <strong>CONSULTA DE AGENTE CIVIL DE TRÁNSITO POR CÉDULA I.</strong>
+  </div>
+  <div class="card-body card-block text-center">
+    <form action="#" method="post" enctype="multipart/form-data" class="form-horizontal" onsubmit="return validateForm()">
+      {% csrf_token %}
+      <div class="form-group text-center">
+        <input type="number" name="Cedula" id="inputCedula" placeholder="Ingrese número de cédula" style="width: 250px; font-size: 16px;" maxlength="10" pattern="\d{10}" title="Por favor, ingrese exactamente 10 dígitos." oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" onkeypress="return event.charCode >= 48 && event.charCode <= 57"/>
+        <input type="submit" value="Buscar" class="btn btn-primary" style="background-color:#d31406">
+      </div>
+    </form>
+    <br>
+    {% if not agente %}
+      <p>No existe información</p>
+    {% else %}
+    <br>
+    <table class="table" frame="void" rules="none" align="center" cellspacing="0" cellpadding="0" bordercolor="#ffffff" border="0" style="width: 1000px;">
+      <thead class="thead-custom">
+        <tr>
+          <th>FOTOGRAFÍA</th>
+          <th>CÓDIGO DEL A.C.T.</th>
+          <th>NÚMERO DE C.I.</th>
+          <th>NOMBRES Y APELLIDOS</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in agente %}
+        <tr>
+          <td><img height="100" width="100" src="./../media/{{ a.fotoA }}"></td>
+          <td>{{ a.Codigo_Agente }}</td>
+          <td>{{ a.Cedula }}</td>
+          <td>{{ a.Nombres }} {{ a.Apellidos }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  function validateForm() {
+    var cedula = document.getElementById('inputCedula').value;
+
+    if (!cedula) {
+      alert('Por favor, complete el campo de número de cédula.');
+      return false;
+    }
+
+    if (!/^\d{10}$/.test(cedula)) {
+      alert('El número de cédula debe contener exactamente 10 dígitos.');
+      return false;
+    }
+
+    sessionStorage.setItem('busquedaRealizada', 'true');
+    return true;
+  }
+
+  document.addEventListener("DOMContentLoaded", function() {
+    if (sessionStorage.getItem('busquedaRealizada') === 'true') {
+      const contadorElement = document.getElementById('alerta-infracciones');
+      const contadorValor = parseInt(contadorElement.textContent.split(': ')[1]);
+
+      if (contadorValor === 0 || isNaN(contadorValor)) {
+        alert('¡Atención! No se encontró información del agente.');
+      }
+
+      sessionStorage.removeItem('busquedaRealizada');
+    }
+  });
+
+  function confirmLogout() {
+    if (confirm('¿Estás seguro de cerrar sesión?')) {
+      window.location.href = "{% url 'logout' %}";
+    } else {
+      // Si el usuario cancela, no se realiza ninguna acción
+    }
+  }
+</script>
+
+{% if user.groups.all.0.name == "Agenteadmin" %}
+{% else %}
+<META HTTP-EQUIV="REFRESH" CONTENT="0; http://18.117.245.254/admin">
+{% endif %}
+{% endblock body %}

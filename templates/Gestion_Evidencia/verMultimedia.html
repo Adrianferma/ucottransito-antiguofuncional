@@ -1,0 +1,153 @@
+{% extends 'index.html' %}
+{% block titulo %}
+  Multimedia
+{% endblock titulo %}
+{% block body %}
+
+<style>
+    .thead-custom {
+      background-color: #bcbcbc; /* Cambia esto al color que prefieras */
+      color: black; /* Opcional: cambiar el color del texto */
+    }
+    .media-grid {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .media-item {
+        margin: 10px;
+    }
+</style>
+
+<div class="card-header text-center" style="background-color: #00008B; color: white;">
+  <br>
+  <strong>CONTENIDO DE MULTIMEDIA<br></strong>
+  <br>
+</div>
+
+<div class="container text-center">
+  <br>
+
+  <!-- Sección de Imágenes -->
+  <div class="table-responsive">
+    <table class="table table-bordered" style="background-color:#F4EAE8">
+      <thead class="thead-custom">
+        <tr>
+          <th class="text-center">IMÁGENES</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div class="media-grid">
+              <!-- Bucle para iterar sobre la variable de plantilla "evidencia" -->
+              {% for data in evidencia %}
+                <div class="media-item">
+                  <!-- Mostrar la imagen principal -->
+                  <img height="200" width="200" src="./../media/{{data.model_pic}}">
+                </div>
+                <!-- Mostrar las demás imágenes guardadas -->
+                {% if data.other_pics %}
+                  {% for pic in data.other_pics %}
+                    <div class="media-item">
+                      <img height="200" width="200" src="./../media/{{pic}}">
+                    </div>
+                  {% endfor %}
+                {% endif %}
+              {% endfor %}
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Sección de Audios -->
+  <div class="table-responsive">
+    <table class="table table-bordered" style="background-color:#F4EAE8">
+      <thead class="thead-custom">
+        <tr>
+          <th class="text-center">AUDIO</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div class="media-grid">
+              <!-- Bucle para iterar sobre la variable de plantilla "evidenciaa" -->
+              {% for dataa in evidenciaa %}
+                <div class="media-item">
+                  <!-- Mostrar el audio principal -->
+                  <audio controls src="./../media/{{dataa.model_aud}}">{{dataa.model_aud}}</audio>
+                </div>
+                <!-- Mostrar los demás audios guardados -->
+                {% if dataa.other_auds %}
+                  {% for aud in dataa.other_auds %}
+                    <div class="media-item">
+                      <audio controls src="./../media/{{aud}}">{{aud}}</audio>
+                    </div>
+                  {% endfor %}
+                {% endif %}
+              {% endfor %}
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Sección de Videos -->
+  <div class="table-responsive">
+    <table class="table table-bordered" style="background-color:#F4EAE8">
+      <thead class="thead-custom">
+        <tr>
+          <th class="text-center">VIDEO</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div class="media-grid">
+              <!-- Bucle para iterar sobre la variable de plantilla "evidenciav" -->
+              {% for datav in evidenciav %}
+                <div class="media-item">
+                  <!-- Mostrar el video principal -->
+                  <video width="200" height="auto" controls>
+                    <source src="./../media/{{datav.model_vid}}" type="video/mp4">{{datav.model_vid}}
+                  </video>
+                </div>
+                <!-- Mostrar los demás videos guardados -->
+                {% if datav.other_vids %}
+                  {% for vid in datav.other_vids %}
+                    <div class="media-item">
+                      <video width="200" height="auto" controls>
+                        <source src="./../media/{{vid}}" type="video/mp4">{{vid}}
+                      </video>
+                    </div>
+                  {% endfor %}
+                {% endif %}
+              {% endfor %}
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    function confirmLogout() {
+        if (confirm('¿Estás seguro de cerrar sesión?')) {
+            window.location.href = "{% url 'logout' %}";
+        } else {
+            // Si el usuario cancela, no se realiza ninguna acción
+        }
+    }
+  </script>
+
+  {% if user.groups.all.0.name == "Agenteadmin" %}
+    <!-- Your content for Agenteadmin -->
+  {% else %}
+    <meta http-equiv="refresh" content="0; http://18.117.245.254/admin">
+  {% endif %}
+</div>
+{% endblock body %}

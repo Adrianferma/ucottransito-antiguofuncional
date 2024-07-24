@@ -1,0 +1,169 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>Reporte de boleta de citación de infracciones de tránsito</title>
+    <style type="text/css">
+
+        @page {
+            size: A6; /* Tamaño de página A6 */
+            margin-left: 4mm; /* Margen izquierdo de 6mm */
+            margin-right: 40mm; /* Margen derecho de 20mm */
+            margin-top: 1mm; /* Margen superior de 0mm */
+            margin-bottom: 0mm; /* Margen inferior de 0mm */
+        }
+
+        body {
+            font-family: Verdana, Geneva, sans-serif; /* Cambia el tipo de letra a Verdana */
+            font-weight: 100;
+            font-size: 8px;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            line-height: 1; /* Reduce el interlineado en todo el cuerpo */
+        }
+        .column {
+            flex: 1;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        .column-left {
+            flex: 1;
+            width: 100%; /* Ajustamos la columna izquierda al 100% del contenedor */
+            max-width: 300px; /* Fijamos un ancho máximo para ajustarse al tamaño de la impresora portátil */
+            word-wrap: break-word; /* Ajustamos el contenido para que no desborde la columna */
+            white-space: normal; /* Permitimos que el contenido envuelva en múltiples líneas */
+        }
+        .column-middle, .column-right {
+            flex: 1;
+            display: none;
+        }
+        .header, .details {
+            font-size: 8px;
+            text-align: left;
+            color: #000000;
+            margin: 0;
+            padding: 0;
+            line-height: 1; /* Reduce el interlineado */
+        }
+        .title {
+            font-size: 10px;
+            font-weight: bold;
+            padding: 0;
+            margin: 0;
+            line-height: 1; /* Reduce el interlineado */
+        }
+        .hrItem {
+            border: none;
+            height: 1px;
+            color: #333;
+            background-color: #000;
+            margin: 0;
+            padding: 0;
+        }
+        i {
+            color: #990000;
+            font-style: normal;
+            font-weight: bold;
+            line-height: 1; /* Reduce el interlineado */
+            letter-spacing: 1px; /* Ajusta el espaciado entre letras */
+        }
+
+        /* Reducir el espacio de los saltos de línea */
+        p, br {
+            margin: 0;
+            padding: 0;
+        }
+
+        b, i {
+            margin: 0;
+            padding: 0;
+            letter-spacing: 5px; /* Ajusta el espaciado entre letras */
+        }
+
+        .photo-container {
+            display: flex;
+            justify-content: center; /* Centrar el contenedor */
+            gap: 20px; /* Espacio notorio entre las imágenes */
+            margin: auto; /* Centrar el contenedor */
+        }
+
+        .photo-container img {
+            height: 100px; /* Ajusta la altura según sea necesario */
+            width: 100px; /* Ajusta el ancho según sea necesario */
+        }
+
+    </style>
+</head>
+<body>
+    <div class="column column-left">
+        <div class='header'>  
+            <hr class='hrItem'/>
+            <p class='title' style='text-align: center;' >UNIDAD DE CONTROL OPERATIVO DE TRÁNSITO - LOJA</p>
+            <p class='h2'><b>BOLETA DE CITACIÓN DE INFRACCIÓN DE TRÁNSITO</b></p>
+        </div>
+        <div class='details'>
+            {% for i in infraccion %}
+            <i>* DATOS DE LA CITACIÓN:</i><br/>
+            <b>Número de citación:</b> &nbsp;{{ i.NumeroInfraccion }}<br/>
+            <b>Fecha de infracción:</b> {{ i.Fecha_Infraccion }}<br/>
+            <b>Hora de infracción:</b> &nbsp;&nbsp;{{ i.Hora_Infraccion }}<br/>
+            <b>Hora de detención:</b> &nbsp;{{ i.Hora_Detencion }}<br/>
+            <b>Fecha de registro:</b> &nbsp;{{ i.Fecha_Registro}}
+            <b>- hora:</b> &nbsp;&nbsp;{{ i.Hora_Registro }}<br/><br/>
+
+            <i>* INFORMACIÓN DEL CONDUCTOR:</i><br/>
+            <b>Nro. Licencia:</b> {{ i.Conductor.CedulaC }}<br/>
+            <b>Nombres:</b> &nbsp;&nbsp;{{ i.Conductor.Nombres }}<br/>
+            <b>Apellidos:</b> &nbsp;&nbsp;{{ i.Conductor.Apellidos }}<br/>
+            <b>Tipo Licencia:</b> &nbsp;{{ i.Conductor.TipoLicencia }}<br/>
+            <b>Categoria Licencia:</b> &nbsp;{{ i.Conductor.CategoriaLicencia }}<br/><br/>
+
+            <i>* CARACTERÍSTICAS DEL VEHÍCULO:</i><br/>
+            <b>Placa:</b> &nbsp;{{ i.Vehiculo.Placa }}<br/>
+            <b>Marca:</b> {{ i.Vehiculo.Marca }}<br/>
+            <b>Tipo:</b> &nbsp;&nbsp;{{ i.Vehiculo.Tipo }}<br/>
+            <b>Color:</b> {{ i.Vehiculo.Color }}<br/><br/>
+
+            <i>* CÓDIGO ORGÁNICO INTEGRAL PENAL:</i><br/>
+            <b>Artículo:</b> &nbsp;{{ i.ArticuloC.Articulo }}<br/>
+            <b>Inciso:</b> &nbsp;&nbsp;&nbsp;&nbsp;{{ i.ArticuloC.Inciso }}<br/>
+            <b>Numeral:</b> &nbsp;{{ i.ArticuloC.Numeral }}<br/><br/>
+
+            <i>* BREVE RELATO DE LOS HECHOS Y CIRCUNSTANCIAS:</i><br/>
+            <b>Descripción:</b> &nbsp;{{ i.Descripcion }}<br/><br/>
+
+            <i>* LOCALIZACIÓN:</i><br/>
+            <b>Sitio de infracción:</b> &nbsp;{{ i.Ubicacion }}<br/>
+            <b>Latitud:</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ i.Latitud }}<br/>
+            <b>Longitud:</b> &nbsp;{{ i.Longitud }}<br/><br/>
+
+            <i>* DATOS DEL AGENTE CIVIL DE TRÁNSITO:</i><br/>
+            <b>Nombres:</b> &nbsp;{{ i.Agente.Nombres }}<br/>
+            <b>Apellidos:</b> {{ i.Agente.Apellidos }}<br/>
+            <b>Cédula:</b> &nbsp;&nbsp;&nbsp;&nbsp;{{ i.Agente.Cedula }}<br/>
+            {% endfor %}
+           
+        </div>
+        <div class='details'><br/>
+            <i>* EVIDENCIA:</i><br/>
+            <i style="color:#000000;"><b>Fotografía(s):</b></i><br/>
+             <div class="photo-container">
+            {% for i in foto|slice:":2" %} <!-- Solo toma las primeras dos fotos -->
+                <img src="./../media/{{ i.model_pic }}" alt="Evidencia"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            {% endfor %}<br/>
+           
+            <b>------------------------------------------------------------------------------------------</b><br/>
+            
+            <b>Reporte generado el:</b> {{ hour }}
+
+            <b>------------------------------------------------------------------------------------------</b><br/>
+        </div>
+    </div>
+    <div class="column column-middle"></div>
+    <div class="column column-right"></div>
+    {% if user.groups.all.0.name == "Agenteadmin" %}
+    {% else %}
+    <META HTTP-EQUIV="REFRESH" CONTENT="0; http://18.117.245.254/admin">
+    {% endif %}
+</body>
+</html>

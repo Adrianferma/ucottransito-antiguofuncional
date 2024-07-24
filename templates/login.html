@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Inicio de Sesión | UCOT</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css'>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css'>
+    <link rel="shortcut icon" href="{% static 'images/logos3.png' %}">
+    <!-- Reemplaza 'logos3.png' con el nombre de tu imagen -->
+    <style>
+        body {
+            background-color: #00008B;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid p-0" style="background-color:#00008B;">
+        <div class="row justify-content-center align-items-center text-center p-2">
+            <div class="m-1 col-sm-10 col-md-8 col-lg-7 shadow-sm p-3 mb-5 bg-white border rounded">
+                <div class="pt-5 pb-5">
+                    <div class="d-flex justify-content-center align-items-center mb-3">
+                        <!-- Imagen 'logos3' -->
+                        <img class="rounded" src="{% static 'images/logos3.png' %}" alt="" style="max-width: 100%; height: auto;">
+                        <!-- Reemplaza 'logos3.png' con el nombre de tu imagen -->
+                    </div>
+                    <p class="text-center text-uppercase mt-3" style="font-size: 25px;"><br><strong>REGISTRO DE BOLETAS DE CITACIÓN DE INFRACCIONES DE TRÁNSITO - LOJA</strong></p>
+                    <form class="form text-center" method="POST">
+                        {% csrf_token %}
+                        <div class="form-group input-group-md">
+                            <label for="" style="font-size: 20px;"><br><strong>Nombre de usuario:</strong></label>
+                           
+                           {{ form.username }}
+                        </div>
+                        <div class="form-group input-group-md">
+                            <label for="" style="font-size: 20px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>Contraseña:</strong></label>
+                            {{ form.password }}
+                        </div>
+                        <button class="btn btn-lg btn-success mt-4" type="submit"><strong>Iniciar sesión</strong></button>
+                    </form>
+                </div>
+                {% if form.errors %}
+                <div id="mensaje" class="alert alert-danger alert-dismissible" role="alert" style="background-color:#95CAEF;">
+                    <strong>SE REQUIERE AUTENTICACIÓN: </strong>USUARIO Y CONTRASEÑA
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
+    <script>
+        // Función para ocultar el mensaje después de unos segundos
+        setTimeout(function() {
+            document.getElementById('mensaje').style.display = 'none';
+        }, 5000); // Cambia 5000 a la cantidad de milisegundos que desees (en este caso, 5 segundos)
+    </script>
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+
+</html>

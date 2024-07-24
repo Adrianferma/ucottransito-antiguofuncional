@@ -1,0 +1,357 @@
+{% extends 'index.html' %}
+{% block titulo %}
+  Infracciones de tránsito
+{% endblock titulo %}
+{% block body %}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lykmapipo/themify-icons@0.1.2/css/themify-icons.css">
+<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.js'></script>
+<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.css' rel='stylesheet' />
+
+<style>
+  #map {
+    margin-top: 35px; /* Añadir margen superior para separación */
+    width: 100%;
+    height: 500px; /* Ajustar altura del mapa según necesidad */
+  }
+
+  .mapboxgl-popup {
+    max-width: 200px; /* Ajustar el ancho máximo del popup */
+  }
+
+  .mapboxgl-canvas {
+    cursor: pointer;
+  }
+
+  .form-group input[type="number"],
+  .form-group input[type="text"],{
+    width: 230px;
+    margin-right: 10px;
+  }
+  .form-group input[type="date"] {
+    width: 150px;
+    margin-right: 10px;
+  }
+
+    .thead-custom {
+      background-color: #bcbcbc; /* Cambia esto al color que prefieras */
+      color: black; /* Opcional: cambiar el color del texto */
+  }
+
+
+
+</style>
+
+<div class="container-fluid mt-5">
+  <div class="card mt-4">
+    <div class="card-header text-center" style="background-color: #00008B; color: white;">
+      <strong>CONSULTA DE INFRACCIONES DE TRÁNSITO</strong>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <i style="color:#FF0000;" id="alerta-infracciones"><strong>Citaciones encontradas: {{contador}}</strong></i>
+     
+
+  <script>
+function validateForm() {
+  var consultaPor = document.getElementById('consultaPor').value;
+  var numeroInfraccion = document.getElementById('inputNumeroInfraccion').value;
+  var cedulaConductor = document.getElementById('inputConductor').value;
+  var placaVehiculo = document.getElementById('inputVehiculo').value;
+  var tipo = document.getElementById('Tipo').value;
+  var fechaInicio = document.getElementById('FechaInicio').value;
+  var fechaFin = document.getElementById('FechaFin').value;
+
+  if (!consultaPor) {
+    alert('Por favor, seleccione una opción de consulta.');
+    return false;
+  }
+
+  if ((consultaPor === 'NumeroInfraccion' && !numeroInfraccion) ||
+      (consultaPor === 'Conductor' && !cedulaConductor) ||
+      (consultaPor === 'Vehiculo' && !placaVehiculo) ||
+      (consultaPor === 'TipoInfraccion' && (!tipo || tipo === "" || !fechaInicio || !fechaFin))) {
+    alert('Por favor, complete los campos requeridos para la consulta seleccionada.');
+    return false;
+  }
+
+  // Establecer bandera para indicar que se ha realizado una búsqueda
+  sessionStorage.setItem('busquedaRealizada', 'true');
+  return true;
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+  // Inicializar fecha de hoy en los campos de fecha
+  var today = new Date();
+  var dd = String(today.getDate()).padStart(2, '0');
+  var mm = String(today.getMonth() + 1).padStart(2, '0'); // Enero es 0!
+  var yyyy = today.getFullYear();
+  today = yyyy + '-' + mm + '-' + dd;
+  document.getElementById('FechaInicio').value = today;
+  document.getElementById('FechaFin').value = today;
+
+  // Resetear la bandera después de cargar la página
+  sessionStorage.removeItem('busquedaRealizada');
+});
+
+function mostrarCampo() {
+  const consultaPor = document.getElementById('consultaPor').value;
+  const campos = document.querySelectorAll('.campo-consulta');
+  campos.forEach(campo => {
+    campo.style.display = 'none';
+    campo.querySelector('input').value = '';  // Limpiar el valor del campo
+  });
+  if (consultaPor) {
+    document.getElementById(consultaPor).style.display = 'block';
+  }
+}
+</script>
+
+
+
+
+    </div>
+    <div class="card-body" >
+      <form method="POST" onsubmit="return validateForm()">
+        {% csrf_token %}
+        
+
+<div class="form-group card-block" style="font-size: medium;">
+  <label for="consultaPor" style="color:#FF0000;"><strong>SELECCIONE UNA OPCIÓN DE CONSULTA:</strong>&nbsp;&nbsp;</label>
+  <select id="consultaPor" class="form-control" style="width: 250px;" onchange="mostrarCampo()">
+    <option value="">Seleccione una opción</option>
+    <option value="NumeroInfraccion">1. Número de Citación</option>
+    <option value="Conductor">2. Cédula del Conductor</option>
+    <option value="Vehiculo">3. Placa del Vehículo</option>
+    <option value="TipoInfraccion">4. Clase de Infracción</option>
+  </select>
+
+  <div id="NumeroInfraccion" class="campo-consulta" style="display:none; width: 250px;margin-top: 10px;">
+    
+    <input type="text" id="inputNumeroInfraccion" name="NumeroInfraccion" class="form-control" placeholder="Ingrese Número de Citación" maxlength="10" pattern="\d*" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" onkeypress="return event.charCode >= 48 && event.charCode <= 57"/>
+  </div>
+
+  <div id="Conductor" class="campo-consulta" style="display:none; width: 250px; margin-top: 10px;">
+    
+    <input type="text" id="inputConductor" name="Conductor" class="form-control" placeholder="Ingrese Cédula del Conductor" maxlength="10" pattern="\d*" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);"/>
+  </div>
+
+  <div id="Vehiculo" class="campo-consulta" style="display:none; width: 250px; margin-top: 10px;">
+    
+    <input type="text" id="inputVehiculo" name="Vehiculo" class="form-control" placeholder="Ingrese Placa del Vehículo" maxlength="7" oninput="this.value = this.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase()"/>
+  </div>
+
+  <div id="TipoInfraccion" class="campo-consulta" style="display:none; margin-top: 10px;">
+    <div class="form-group">
+     
+      <select name="Tipo" id="Tipo" value="{{Tipo}}" placeholder="Estado">
+        <option value="" selected>Seleccionar Clase de Infracción</option>
+        <option value="Art. 383.">Art. 383. Conducción de vehículo con llantas en mal estado</option>
+        <option value="Art. 384.">Art. 384. Conducción bajo efecto de sustancias estupefacientes</option>
+        <option value="Art. 385.">Art. 385. Conducción en estado de embriaguez</option>
+        <option value="Art. 386.">Art. 386. Contravención de tránsito de primera clase</option>
+        <option value="Art. 387.">Art. 387. Contravención de tránsito de segunda clase</option>
+        <option value="Art. 388.">Art. 388. Contravención de tránsito de tercera clase</option>
+        <option value="Art. 389.">Art. 389. Contravención de tránsito de cuarta clase</option>
+        <option value="Art. 390.">Art. 390. Contravención de tránsito de quinta clase</option>
+        <option value="Art. 391.">Art. 391. Contravención de tránsito de sexta clase</option>
+        <option value="Art. 392.">Art. 392. Contravención de tránsito de séptima clase</option>
+        <option value="Todos">Todos</option>
+      </select>
+
+      &nbsp;&nbsp;
+      <i style="color:#FF0000;"><strong>Desde:&nbsp;&nbsp;</strong></i>
+      <input type="date" id="FechaInicio" name="FechaInicio" placeholder= "Fecha Inicio"/>
+      
+      <i style="color:#FF0000;"><strong>Hasta:</strong>&nbsp;&nbsp;</i>
+      <input type="date" id="FechaFin" name="FechaFin" placeholder="Fecha Fin"/>
+    </div>
+  </div>
+
+  <button type="submit" class="btn btn-primary" style="background-color:#d31406; padding: 5px 15px; font-size: 12px; margin-top: 12px;">Buscar</button>
+</div>
+
+
+
+      </form>
+    </div>
+  </div>
+
+    <!-- Contenedor de la tabla -->
+  <div class="card mt-4">
+    <div class="card-header text-center" style="background-color: #00008B; color: white;">
+      <strong>DETALLES DE LA BOLETA DE CITACIÓN DE INFRACCIONES DE TRÁNSITO</strong>
+    </div>
+    <div class="card-body">
+
+      <div class="table-responsive">
+        <table class="table table-bordered" style="background-color:#F4EAE8; width:100%; font-size: xx-small;" frame="void" rules="none" cellspacing="0" cellpadding="0" bordercolor="#ffffff" border="0">
+          <thead class="thead-custom">
+            <tr>
+              <th>Nro. Citación</th>
+              <th>Fecha Infracción</th>
+              <th>Hora Infracción</th>
+              <th>Hora Detención</th>
+              <th>Hora Registro</th>
+              <th>Cédula/Licencia Conductor</th>
+              <th>Nombre Conductor</th>
+              <th>Categoria Licencia</th>
+              <th>Tipo Licencia</th>
+              <th>Placa Vehículo</th>
+              <th>Marca Vehículo</th>
+              <th>Tipo Vehículo</th>
+              <th>Color Vehículo</th>    
+              <th>Artículo C.O.I.P.</th>
+              <th>Inciso del Artículo</th>
+              <th>Numeral del Artículo</th>
+              <th>Breve Relato de los Hechos</th>
+              <th>Ubicación Infracción</th>
+              <th>Nombre A.C.T.</th>
+              <th>Cédula I. A.C.T.</th>
+              <th>Ver Multimedia</th>
+              <th>Ver Mapa</th>
+              <th>Generar Reporte</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for i in infraccion|dictsort:"Fecha_Infraccion" %}
+            <tr>
+              <td>{{ i.NumeroInfraccion }}</td>
+              <td>{{ i.Fecha_Infraccion }}</td>
+              <td>{{ i.Hora_Infraccion }}</td>
+              <td>{{ i.Hora_Detencion }}</td>
+              <td>{{ i.Hora_Registro }}</td>
+              <td>{{ i.Conductor.CedulaC }}</td>
+              <td>{{ i.Conductor.Nombres }} {{ i.Conductor.Apellidos }}</td>
+              <td>{{ i.Conductor.CategoriaLicencia }}</td>
+              <td>{{ i.Conductor.TipoLicencia }}</td>
+              <td>{{ i.Vehiculo.Placa }}</td>
+              <td>{{ i.Vehiculo.Marca }}</td>
+              <td>{{ i.Vehiculo.Tipo }}</td>
+              <td>{{ i.Vehiculo.Color }}</td>                        
+              <td>{{ i.ArticuloC.Articulo }}</td>
+              <td>{{ i.ArticuloC.Inciso }}</td>
+              <td>{{ i.ArticuloC.Numeral }}</td>
+              <td>{{ i.Descripcion }}</td>
+              <td>{{ i.Ubicacion }}</td>
+              <td>{{ i.Agente.Nombres }} {{ i.Agente.Apellidos }}</td>
+              <td>{{ i.Agente.Cedula }}</td>
+              <td>
+                <div class="text-center">
+                  <a href="/Gestionar_Evidencia/listarEvidencia/?Infraccion_Transito={{ i.NumeroInfraccion }}">
+                    <button style="background-color: #2986cc; padding: 5px 10px; font-size: 12px;" type="submit" class="btn btn-primary">VER</button>
+                  </a>
+                </div>
+              </td>
+              <td>
+                <a href="/Gestionar_Infraccion/mapaInfraccion/?Infraccion_Transito={{ i.NumeroInfraccion }}">
+                  <button style="background-color:#8fce00; padding: 5px 10px; font-size: 12px;" type="submit" class="btn btn-primary">IR</button>
+                </a>
+              </td>
+              <td>
+                <a href="/Gestionar_Infraccion/GeneratePdf/?Infraccion_Transito={{ i.NumeroInfraccion }}">
+                  <button style="background-color: #e97b09; padding: 5px 10px; font-size: 12px;" type="submit" class="btn btn-primary">REPORTE</button>
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+ </div>
+  <!-- Contenedor del mapa -->
+  <div class="card mt-4">
+    <div class="card-header text-center" style="background-color: #00008B; color: white;">
+      <strong>UBICACIÓN EN EL MAPA</strong>
+    </div>
+    <div class="card-body text-center">
+      <div id='map'></div>
+    </div>
+  </div>
+
+
+</div>
+
+<script>
+  mapboxgl.accessToken = 'pk.eyJ1IjoidWNvdCIsImEiOiJjanlxMWRpd3AwZmxvM2RtdWFmdzBpdTd6In0.JqU3fJcJP__fO28mMYnYWg';
+
+  var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/streets-v11',
+    center: [-79.2042236, -3.99313],
+    zoom: 13
+  });
+
+  {% for i in infraccion %}
+  var latitud = "{{ i.Latitud }}";
+  var longitud = "{{ i.Longitud }}";
+
+  latitud = parseFloat(latitud.replace(",", "."));
+  longitud = parseFloat(longitud.replace(",", "."));
+
+  if (!isNaN(latitud) && !isNaN(longitud)) {
+    var popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
+      "<span style='color:black'><strong>Número de Citación:</strong> {{i.NumeroInfraccion}}</span><br>" +
+      "<span style='color:black'><strong>Fecha: </strong>{{i.Fecha_Infraccion}}</span><br>" +
+      "<span style='color:black'><strong>Cédula I. Conductor: </strong>{{i.Conductor.CedulaC}}</span><br>" +
+      "<span style='color:black'><strong>Nombres:</strong> {{i.Conductor.Nombres}} {{i.Conductor.Apellidos}}</span><br>" +
+      "<span style='color:black'><strong>Placa Vehículo: </strong>{{i.Vehiculo.Placa}}</span><br>" +
+      "<a href='/Gestionar_Infraccion/pinindex/?Infraccion_Transito={{i.NumeroInfraccion}}'><span style='color:red'><strong>VER</strong></a></span>"
+    );
+
+    new mapboxgl.Marker({
+      color: "#f32626",
+      draggable: false
+    })
+      .setLngLat([longitud, latitud])
+      .setPopup(popup)
+      .addTo(map);
+  }
+  {% endfor %}
+
+  var layerList = document.getElementById('menu');
+  var inputs = layerList.getElementsByTagName('input');
+
+  function switchLayer(layer) {
+    var layerId = layer.target.id;
+    map.setStyle('mapbox://styles/mapbox/' + layerId);
+  }
+
+  for (var i = 0; i < inputs.length; i++) {
+    inputs[i].onclick = switchLayer;
+  }
+</script>
+    <script>
+function confirmLogout() {
+    if (confirm('¿Estás seguro de cerrar sesión?')) {
+        window.location.href = "{% url 'logout' %}";
+    } else {
+        // Si el usuario cancela, no se realiza ninguna acción
+    }
+}
+</script>
+
+ <!-- Script para establecer la fecha de hoy -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var today = new Date();
+        var dd = String(today.getDate()).padStart(2, '0');
+        var mm = String(today.getMonth() + 1).padStart(2, '0'); // Enero es 0!
+        var yyyy = today.getFullYear();
+
+        today = yyyy + '-' + mm + '-' + dd;
+        
+        document.getElementById('FechaInicio').value = today;
+        document.getElementById('FechaFin').value = today;
+    });
+</script>
+
+
+{% if user.groups.all.0.name == "Agenteadmin" %}
+
+
+{% else %}
+<META HTTP-EQUIV="REFRESH" CONTENT="0; http://18.117.245.254/admin">
+{% endif %}
+
+{% endblock body %}

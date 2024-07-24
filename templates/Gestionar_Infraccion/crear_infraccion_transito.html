@@ -1,0 +1,1167 @@
+{% extends 'indexaux.html' %}
+{% block titulo %}
+Infracciones tránsito
+{% endblock titulo %}
+
+<html lang="en">
+
+
+<head>
+  <meta charset='utf-8' />
+  
+  <title>Create a draggable Marker</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.js'></script>
+  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.css' rel='stylesheet' />
+<script src="https://api.mapbox.com/mapbox-gl-js/v1.6.1/mapbox-gl.js"></script>
+
+<link href="https://api.mapbox.com/mapbox-gl-js/v1.6.1/mapbox-gl.css" rel="stylesheet" />
+  <style>
+    body { margin:0; padding:0; }
+    #map { position:absolute; top:0; bottom:0; width:100%; }
+  </style>
+
+</head>
+
+{% block body %} 
+
+
+
+  <div class="card-header text-center  bg-white" >
+    <strong>BOLETA DE CITACIÓN DE INFRACCIONES DE TRÁNSITO</strong>
+   </div>
+
+<div class="card" style="background-color:#eeeeee;">  
+
+  <form method="POST" enctype="multipart/form-data" id="miFormulario">
+    {% csrf_token %}
+     
+
+
+    
+    <div class="card-body card-block">
+      <form action="#" method="post" enctype="multipart/form-data" class="form-horizontal" style="color:#64a9b3" id="miFormulario">
+
+
+        <div class="row">
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <div class="col-xs-12 col-md-2">
+        <label for="Fecha_Infraccion"><strong>{{ infraccion_transito_form.Fecha_Infraccion.label }}</strong></label>
+        <input class="form-control" type="date" id="Fecha_Infraccion" name="Fecha_Infraccion" value="11/01/2025" readonly>
+    </div>
+    <div class="col-xs-12 col-md-2">
+        <label for="Hora_Infraccion"><strong>{{ infraccion_transito_form.Hora_Infraccion.label }}</strong></label>
+        <input class="form-control" type="time" id="Hora_Infraccion" name="Hora_Infraccion">
+    </div>
+    <div class="col-xs-12 col-md-2">
+        <label for="Hora_Detencion"><strong>{{ infraccion_transito_form.Hora_Detencion.label }}</strong></label>
+        <input class="form-control" type="time" id="Hora_Detencion" name="Hora_Detencion">
+    </div>
+</div>   <br>
+
+
+
+
+
+
+
+
+
+
+<div class="card-header text-center" style="background-color: #00008B; color: white;">
+  <strong>DATOS DEL AGENTE CIVIL DE TRÁNSITO</strong>
+</div>
+<br>
+<input type="hidden" name="ContadorInf" id="ContadorInf"/>
+<div class="row form-group" id="recargar">
+  <!-- Campo de cédula del agente -->
+  <div class="col-xs-12 col-md-6" style="display: none;">
+    <strong>Cédula I. Agente:</strong>
+    <input type="text" name="CedulaAgente" id="CedulaAgente" value="{{ logged_in_user.username }}" disabled/>
+  </div>
+  
+  <!-- Campo de cédula del agente form -->
+  <div class="col-xs-12 col-md-3">
+    <strong>{{agenteform.Cedula.label}} Identidad*</strong> {{agenteform.Cedula}}
+  </div>
+  
+  <!-- Campo de nombres del agente -->
+  <div class="col-xs-12 col-md-3">
+    <strong>{{agenteform.Nombres.label}}*</strong> {{agenteform.Nombres}}
+  </div>
+  
+  <!-- Campo de apellidos del agente -->
+  <div class="col-xs-12 col-md-3">
+    <strong>{{agenteform.Apellidos.label}}*</strong> {{agenteform.Apellidos}}
+  </div>
+  
+  <!-- Campo de número de infracción -->
+  <div class="col-xs-12 col-md-3">
+    <strong>{{infraccion_transito_form.NumeroInfraccion.label}}</strong> {{infraccion_transito_form.NumeroInfraccion}}
+  </div>
+</div>
+
+
+
+       
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="card-header text-center" style="background-color: #00008B; color: white;">
+  <strong>INFORMACIÓN DEL CONDUCTOR</strong>
+</div>
+&nbsp;&nbsp;
+<div class="row form-group">
+  <div class="col-xs-12 col-md-5">
+    <strong>Cédula/Licencia Conductor:</strong>
+    <input type="text" name="CedulaConductor" id="CedulaConductor" placeholder="Ingrese el número" style="width: 250px; font-size: 16px;" maxlength="10" pattern="\d*" oninput="handleCedulaInput(this)" onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
+    <input type="button" value="Buscar" onclick="ConsultarC()" style="background-color:#d31406; color:#FFFFFF" />
+  </div>
+</div>
+<div class="row form-group" id="cdn" style="color:#000000">
+  <div class="col-xs-12 col-md-2">
+    <label for="{{ conductorform.CedulaC.id_for_label }}"><strong>{{ conductorform.CedulaC.label }}</strong></label>
+    {{ conductorform.CedulaC }}
+  </div>
+  <div class="col-xs-12 col-md-3">
+    <label for="{{ conductorform.Nombres.id_for_label }}"><strong>{{ conductorform.Nombres.label }}</strong></label>
+    {{ conductorform.Nombres }}
+  </div>
+  <div class="col-xs-12 col-md-3">
+    <label for="{{ conductorform.Apellidos.id_for_label }}"><strong>{{ conductorform.Apellidos.label }}</strong></label>
+    {{ conductorform.Apellidos }}
+  </div>
+  <div class="col-xs-12 col-md-2">
+    <label for="TipoLicencia"><strong>{{ conductorform.TipoLicencia.label }}</strong></label>
+    <select name="TipoLicencia" id="TipoLicencia" placeholder="Estado" class="form-control">
+      <option value="" selected>Seleccione tipo</option>
+      <option value="A">A</option>
+      <option value="B">B</option>
+      <option value="F">F</option>
+      <option value="C">C</option>
+      <option value="D">D</option>
+      <option value="E">E</option>
+      <option value="G">G</option>
+    </select>
+  </div>
+  <div class="col-xs-12 col-md-2">
+    <label for="CategoriaLicencia"><strong>{{ conductorform.CategoriaLicencia.label }}</strong></label>
+    <select name="CategoriaLicencia" id="CategoriaLicencia" placeholder="Estado" class="form-control">
+      <option value="" selected>Seleccione categoría</option>
+      <option value="PROFESIONAL">PROFESIONAL</option>
+      <option value="NO PROFESIONAL">NO PROFESIONAL</option>
+    </select>
+  </div>
+</div>
+
+<script type="text/javascript">
+  // Función para consultar la información del conductor
+  function ConsultarC() {
+    // Obtener el valor del campo de cédula del conductor
+    let cedula_conductor = $("#CedulaConductor").val();
+
+    // Verificar si el campo de cédula está vacío
+    if (!cedula_conductor) {
+      alert("El campo de cédula está vacío.");
+      clearConductorFields(); // Limpiar campos relacionados con el conductor
+      return;
+    }
+
+    // URL base para la consulta de detalles del conductor
+    let base_url = "http://18.117.245.254/servicio_web/detalleConductor/";
+    let complete_url = base_url + cedula_conductor;
+
+    // Realizar una solicitud AJAX
+    $.ajax({
+      url: complete_url,
+      success: function(result) {
+        // Manejar la respuesta exitosa de la solicitud AJAX
+        if (result && result.conductor) {
+          // Llenar los campos del formulario con la información del conductor
+          $("#id_CedulaC").val(result.conductor.CedulaC).attr("readonly", true);
+          $("#id_Nombres").val(result.conductor.Nombres).attr("readonly", true);
+          $("#id_Apellidos").val(result.conductor.Apellidos).attr("readonly", true);
+          $("#TipoLicencia").val(result.conductor.TipoLicencia).attr("readonly", true);
+          $("#CategoriaLicencia").val(result.conductor.CategoriaLicencia).attr("readonly", true);
+        } else {
+          // Mostrar una alerta si no se encontró información del conductor
+          alert("No existe información");
+          clearConductorFields(); // Limpiar campos relacionados con el conductor
+          $("#CedulaConductor").val(''); // Refrescar campo de cédula a vacío
+        }
+      },
+      error: function() {
+        // Manejar errores en la solicitud AJAX
+        alert("Error/No existe información");
+        clearConductorFields(); // Limpiar campos relacionados con el conductor
+        $("#CedulaConductor").val(''); // Refrescar campo de cédula a vacío
+      }
+    });
+  }
+
+  // Función para limpiar los campos relacionados con el conductor
+  function clearConductorFields() {
+    $("#id_CedulaC").val('').prop("readonly", false);
+    $("#id_Nombres").val('').prop("readonly", false);
+    $("#id_Apellidos").val('').prop("readonly", false);
+    $("#TipoLicencia").val('').prop("readonly", false);
+    $("#CategoriaLicencia").val('').prop("readonly", false);
+  }
+
+  // Función para habilitar los campos relacionados con el conductor
+  function enableConductorFields() {
+    $("#id_CedulaC").prop("readonly", false);
+    $("#id_Nombres").prop("readonly", false);
+    $("#id_Apellidos").prop("readonly", false);
+    $("#TipoLicencia").prop("readonly", false);
+    $("#CategoriaLicencia").prop("readonly", false);
+  }
+
+  // Función que se ejecuta cuando el documento HTML ha sido completamente cargado
+  $(document).ready(function() {
+    // Evento que se dispara cuando se ingresa texto en el campo de cédula del conductor
+    $("#CedulaConductor").on('input', function() {
+      let cedula = $(this).val();
+      
+      // Verificar si se ha borrado un carácter y la longitud es menor a la anterior
+      if (cedula.length < previousLengthConductor) {
+        clearConductorFields(); // Limpiar campos relacionados con el conductor
+        enableConductorFields(); // Habilitar campos relacionados con el conductor
+      }
+      
+      // Actualizar la longitud anterior
+      previousLengthConductor = cedula.length;
+    });
+  });
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="card-header text-center" style="background-color: #00008B; color: white;">
+  <strong>CARACTERÍSTICAS DEL VEHÍCULO</strong>
+</div>
+&nbsp;&nbsp;
+<div class="row form-group">
+  <div class="col-xs-12 col-md-6">
+    <label for="CedulaAgen"><strong>Placa Vehículo:</strong></label>
+    <input type="text" name="Placa" id="CedulaAgen" placeholder="Ingrese la placa" maxlength="7" oninput="handlePlacaInput(this)" />
+    <input type="button" value="Buscar" onclick="ConsultarV()" style="background-color:#d31406; color:#FFFFFF" />
+  </div>
+</div>
+<div class="row form-group" id="cdn">
+  <div class="col-xs-12 col-md-3">
+    <label for="{{ vehiculoform.Placa.id_for_label }}"><strong>{{ vehiculoform.Placa.label }}</strong></label>
+    {{ vehiculoform.Placa }}
+  </div>
+  <div class="col-xs-12 col-md-3">
+    <label for="Marca"><strong>{{ vehiculoform.Marca.label }}</strong></label>
+    <select name="Marca" id="Marca" class="form-control" onchange="toggleOtraMarcaInput()">
+      <option value="" selected>Seleccione marca de vehículo</option>
+      <option value="HYUNDAI">HYUNDAI</option>
+      <option value="KIA">KIA</option>
+      <option value="VOLKSWAGEN">VOLKSWAGEN</option>
+      <option value="NISSAN">NISSAN</option>
+      <option value="MAZDA">MAZDA</option>
+      <option value="GREAT WALL">GREAT WALL</option>
+      <option value="AXXO">AXXO</option>
+      <option value="BAJAJ">BAJAJ</option>
+      <option value="SHINERAY">SHINERAY</option>
+      <option value="CHEVROLET">CHEVROLET</option>
+      <option value="TOYOTA">TOYOTA</option>
+      <option value="SUZUKI">SUZUKI</option>
+      <option value="CHERY">CHERY</option>
+      <option value="OTRA MARCA">OTRA MARCA</option>
+    </select>
+    <input type="text" name="OtraMarca" id="OtraMarca" placeholder="Especifique la marca" class="form-control mt-2" style="display:none;" />
+  </div>
+  <div class="col-xs-12 col-md-3">
+    <label for="Tipo"><strong>{{ vehiculoform.Tipo.label }}</strong></label>
+    <select name="Tipo" id="Tipo" class="form-control" onchange="toggleOtroTipoInput()">
+      <option value="" selected>Seleccione tipo de vehículo</option>
+      <option value="SEDAN">SEDAN</option>
+      <option value="JEEP">JEEP</option>
+      <option value="CAMION C">CAMION C</option>
+      <option value="PASEO">PASEO</option>
+      <option value="BUS">BUS</option>
+      <option value="DOBLE CABINA">DOBLE CABINA</option>
+      <option value="CABINA SIMPLE">CABINA SIMPLE</option>
+      <option value="OTRO TIPO">OTRO TIPO</option>
+    </select>
+    <input type="text" name="OtroTipo" id="OtroTipo" placeholder="Especifique el tipo" class="form-control mt-2" style="display:none;" />
+  </div>
+  <div class="col-xs-12 col-md-3">
+    <label for="Color"><strong>{{ vehiculoform.Color.label }}</strong></label>
+    <select name="Color" id="Color" class="form-control" onchange="toggleOtroColorInput()">
+      <option value="" selected>Seleccione color</option>
+      <option value="AMARILLO">AMARILLO</option>
+      <option value="AZUL">AZUL</option>
+      <option value="BLANCO">BLANCO</option>
+      <option value="CAFE">CAFE</option>
+      <option value="CELESTE">CELESTE</option>
+      <option value="CREMA">CREMA</option>
+      <option value="DORADO">DORADO</option>
+      <option value="NEGRO">NEGRO</option>
+      <option value="PLATEADO">PLATEADO</option>
+      <option value="ROJO">ROJO</option>
+      <option value="VINO">VINO</option>
+      <option value="OTRO COLOR">OTRO COLOR</option>
+    </select>
+    <input type="text" name="OtroColor" id="OtroColor" placeholder="Especifique el color" class="form-control mt-2" style="display:none;" />
+  </div>
+</div>
+
+<script type="text/javascript">
+  // Función para verificar si el campo de placa vehículo está vacío
+  function handlePlacaInput(input) {
+    input.value = input.value.toUpperCase();
+    if (input.value.length < 7) {
+      clearVehicleFields();
+    }
+  }
+
+  // Función para limpiar los campos relacionados con la placa del vehículo
+  function clearVehicleFields() {
+    $("#placa").val('').prop("readonly", false);
+    $("#Marca").val('').prop("readonly", false);
+    $("#OtraMarca").val('').hide().prop("readonly", false);
+    $("#Tipo").val('').prop("readonly", false);
+    $("#OtroTipo").val('').hide().prop("readonly", false);
+    $("#Color").val('').prop("readonly", false);
+    $("#OtroColor").val('').hide().prop("readonly", false);
+    enableVehicleFields(); // Habilitar todos los campos relacionados con la placa del vehículo
+  }
+
+  // Función para habilitar los campos relacionados con la placa del vehículo
+  function enableVehicleFields() {
+    $("#placa").prop("readonly", false);
+    $("#Marca").prop("readonly", false);
+    $("#OtraMarca").prop("readonly", false);
+    $("#Tipo").prop("readonly", false);
+    $("#OtroTipo").prop("readonly", false);
+    $("#Color").prop("readonly", false);
+    $("#OtroColor").prop("readonly", false);
+    $("#CedulaAgen").prop("readonly", false); // Habilitar campo de búsqueda
+  }
+
+  // Función que se ejecuta cuando el documento HTML ha sido completamente cargado
+  $(document).ready(function() {
+    // Evento que se dispara cuando se ingresa texto en el campo de placa del vehículo
+    $("#CedulaAgen").on('input', function() {
+      // Habilitar todos los campos relacionados con la placa del vehículo
+      enableVehicleFields();
+    });
+  });
+
+  function toggleOtraMarcaInput() {
+    const marcaSelect = document.getElementById('Marca');
+    const otraMarcaInput = document.getElementById('OtraMarca');
+    if (marcaSelect.value === 'OTRA MARCA') {
+      otraMarcaInput.style.display = 'inline-block';
+    } else {
+      otraMarcaInput.style.display = 'none';
+      otraMarcaInput.value = '';  // Limpiar el campo cuando no esté visible
+    }
+  }
+
+  function toggleOtroTipoInput() {
+    const tipoSelect = document.getElementById('Tipo');
+    const otroTipoInput = document.getElementById('OtroTipo');
+    if (tipoSelect.value === 'OTRO TIPO') {
+      otroTipoInput.style.display = 'inline-block';
+    } else {
+      otroTipoInput.style.display = 'none';
+      otroTipoInput.value = '';  // Limpiar el campo cuando no esté visible
+    }
+  }
+
+  function toggleOtroColorInput() {
+    const colorSelect = document.getElementById('Color');
+    const otroColorInput = document.getElementById('OtroColor');
+    if (colorSelect.value === 'OTRO COLOR') {
+      otroColorInput.style.display = 'inline-block';
+    } else {
+      otroColorInput.style.display = 'none';
+      otroColorInput.value = '';  // Limpiar el campo cuando no esté visible
+    }
+  }
+
+  // Función ConsultarV() se actualiza para limpiar y habilitar campos al no encontrar información
+  function ConsultarV() {
+    let placa_vehiculo = $("#CedulaAgen").val();
+
+    // Verificar si el campo de placa está vacío
+    if (!placa_vehiculo) {
+      alert("El campo de placa está vacío.");
+      clearVehicleFields();
+      return;
+    }
+
+    let base_url = "http://18.117.245.254/servicio_web/detalleVehiculo/";
+    let complete_url = base_url + placa_vehiculo;
+    
+    $.ajax({
+      url: complete_url,
+      success: function(result) {
+        if (!result || Object.keys(result).length === 0) {
+          alert("No existe información");
+          clearVehicleFields();
+          // Limpiar campo de búsqueda y permitir escribir nuevamente
+          $("#CedulaAgen").val('').prop("readonly", false);
+        } else {
+          $("#placa").val(result.Placa).attr("readonly", true);
+          
+          // Lógica para marca del vehículo
+          const marca = result.Marca.toUpperCase();
+          const marcaOptions = ['HYUNDAI','KIA','VOLKSWAGEN','NISSAN','MAZDA','GREAT WALL','AXXO','BAJAJ','SHINERAY', 'CHEVROLET','TOYOTA','SUZUKI','CHERY'];
+          if (marcaOptions.includes(marca)) {
+          $("#Marca").val(marca).attr("readonly", true);
+            $("#OtraMarca").hide();
+          } else {
+            $("#Marca").val('OTRA MARCA').attr("readonly", true);
+            $("#OtraMarca").val(marca).show().attr("readonly", true);
+          }
+
+
+
+          // Lógica para tipo de vehículo
+          const tipo = result.Tipo.toUpperCase();
+          if (['SEDAN', 'JEEP', 'CAMION C', 'PASEO', 'BUS', 'DOBLE CABINA', 'CABINA SIMPLE'].includes(tipo)) {
+            $("#Tipo").val(tipo).attr("readonly", true);
+            $("#OtroTipo").hide();
+          } else {
+            $("#Tipo").val('OTRO TIPO').attr("readonly", true);
+            $("#OtroTipo").val(tipo).show().attr("readonly", true);
+          }
+          
+          // Lógica para color del vehículo
+          const color = result.Color.toUpperCase();
+          const colorOptions = ['AMARILLO', 'AZUL', 'BLANCO', 'CAFE', 'CELESTE', 'CREMA', 'DORADO', 'NEGRO', 'PLATEADO', 'ROJO', 'VINO'];
+          if (colorOptions.includes(color)) {
+            $("#Color").val(color).attr("readonly", true);
+            $("#OtroColor").hide();
+          } else {
+            if ($("#Color option[value='OTRO COLOR']").length === 0) {
+              $("#Color").append(new Option('OTRO COLOR', 'OTRO COLOR')).attr("readonly", true);
+            }
+            $("#Color").val('OTRO COLOR').attr("readonly", true);
+            $("#OtroColor").val(color).show().attr("readonly", true);
+          }
+        }
+      },
+      error: function() {
+        alert("Error/No existe información");
+        clearVehicleFields();
+        // Limpiar campo de búsqueda y permitir escribir nuevamente
+        $("#CedulaAgen").val('').prop("readonly", false);
+      }
+    });
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+        <div class="row form-group">
+        </div>
+
+
+        
+
+
+        <div class="card-header text-center" style="background-color: #00008B; color: white;">
+          <strong>CÓDIGO ORGÁNICO INTEGRAL PENAL</strong>
+        </div>
+        &nbsp 
+
+
+
+        <div class="row form-group">
+  <div class="col-xs-12 col-md-8">
+    <label for="articulosSelect"><strong>Artículo*</strong></label>&nbsp;&nbsp;&nbsp;
+    <select id="articulosSelect" name="articulosSelect" style="width: 400px;" onchange="mostrarDescripcionCompleta(); populateIncisos();">
+      <option value="">Seleccione un artículo</option>
+      <!-- Options will be populated by JavaScript -->
+    </select>
+  </div>
+</div>
+
+<div id="articulo" class="row form-group">
+  <div class="col-xs-12 col-md-11">
+    
+    <!-- Descripción completa del artículo se mostrará aquí -->
+  </div>
+</div>
+
+ <input type="hidden" name="Articulo" value="" id="hiddenArticulo">
+
+
+
+<div class="row form-group">
+  <div class="col-xs-12 col-md-8">
+    <label for="incisosSelect"><strong>Inciso:</strong></label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <select id="incisosSelect" name="incisosSelect" style="width: 400px;" onchange="mostrarDescripcionCompletaIncisos(); populateNumerales();">
+      <option value="">Seleccione un inciso</option>
+      <!-- Options will be populated by JavaScript -->
+    </select>
+  </div>
+</div>
+
+<div id="inciso" class="row form-group">
+  <div class="col-xs-12 col-md-11">
+    
+    <!-- Descripción completa del inciso se mostrará aquí -->
+  </div>
+</div>
+
+  <input type="hidden" name="Inciso" value="" id="hiddenInciso">
+
+
+
+
+<div class="row form-group">
+  <div class="col-xs-12 col-md-8">
+    <label for="numeralSelect"><strong>Numeral:</strong></label>&nbsp;&nbsp;
+    <select id="numeralSelect" name="numeralSelect" style="width: 400px;" onchange="mostrarDescripcionCompletaNumeral();">
+      <option value="">Seleccione un numeral</option>
+      <!-- Options will be populated by JavaScript -->
+    </select>
+  </div>
+</div>
+
+<div id="numeral" class="row form-group">
+  <div class="col-xs-12 col-md-11">
+    <!-- Descripción completa del numeral se mostrará aquí -->
+  </div>
+</div>
+
+  <input type="hidden" name="Numeral" value="" id="hiddenNumeral">
+
+
+<script type="text/javascript">
+  function populateArticles() {
+    const base_url = "http://18.117.245.254/servicio_web/todosarticulos/";
+
+    $.ajax({
+      url: base_url,
+      success: function(result) {
+        if (result.status === 'ok' && result.articulos) {
+          const select = document.getElementById('articulosSelect');
+          select.innerHTML = ''; // Clear existing options
+
+          // Add default option
+          const defaultOption = document.createElement('option');
+          defaultOption.value = '';
+          defaultOption.textContent = 'Seleccione un artículo';
+          select.appendChild(defaultOption);
+
+          // Populate with articles
+          result.articulos.forEach(article => {
+            const option = document.createElement('option');
+            option.value = article.NumeroArticuloBD;
+            option.setAttribute('data-description', article.DescripcionBDA);
+
+
+
+
+            const shortenedDescription = article.DescripcionBDA.split(' ').slice(0, 10).join(' ');
+
+
+
+            option.textContent = `${shortenedDescription}...`;
+            select.appendChild(option);
+          });
+        } else {
+          console.error("Error: No se encontraron artículos.");
+        }
+      },
+      error: function() {
+        console.error("Error fetching articles.");
+      }
+    });
+  }
+
+  function mostrarDescripcionCompleta() {
+    const select = document.getElementById('articulosSelect');
+    const descripcionCompleta = document.getElementById('articulo').children[0];
+    const selectedOption = select.options[select.selectedIndex];
+
+    if (selectedOption.value === '') {
+      descripcionCompleta.textContent = ''; // Clear description if no article is selected
+      document.getElementById('hiddenArticulo').value = '';
+    } else {
+      descripcionCompleta.textContent = `${selectedOption.getAttribute('data-description')}`;
+
+      document.getElementById('hiddenArticulo').value = `${selectedOption.getAttribute('data-description')}`;
+    }
+
+    // Clear incisos and numerales selects and descriptions
+    document.getElementById('incisosSelect').innerHTML = '<option value="">Seleccione un inciso</option>';
+    document.getElementById('inciso').children[0].textContent = '';
+    document.getElementById('numeralSelect').innerHTML = '<option value="">Seleccione un numeral</option>';
+    document.getElementById('numeral').children[0].textContent = '';
+    document.getElementById('hiddenNumeral').value = '';
+    document.getElementById('hiddenInciso').value = '';
+  }
+
+  function populateIncisos() {
+    const articulosSelect = document.getElementById('articulosSelect');
+    const selectedArticleNumber = articulosSelect.value;
+    const base_url_incisos = `http://18.117.245.254/servicio_web/detalleincisos/${selectedArticleNumber}/`;
+    const base_url_numerales = `http://18.117.245.254/servicio_web/detallenumerales/${selectedArticleNumber}/`;
+
+    $.ajax({
+      url: base_url_incisos,
+      success: function(result) {
+        if (result.status === 'ok' && result.incisos.length > 0) {
+          const select = document.getElementById('incisosSelect');
+          select.innerHTML = ''; // Clear existing options
+
+          // Add default option
+          const defaultOption = document.createElement('option');
+          defaultOption.value = '';
+          defaultOption.textContent = 'Seleccione un inciso';
+          select.appendChild(defaultOption);
+
+          // Populate with incisos
+          result.incisos.forEach(inciso => {
+            const option = document.createElement('option');
+            option.value = inciso.NumeroIncisoBD;
+            option.setAttribute('data-description', inciso.DescripcionBDI);
+            const shortenedDescription = inciso.DescripcionBDI.split(' ').slice(0, 10).join(' ');
+            option.textContent = `${shortenedDescription}...`;
+            select.appendChild(option);
+          });
+        } else {
+          // No incisos found, try fetching numerales
+          populateNumeralesDirectly();
+        }
+      },
+      error: function() {
+        console.error("Error fetching incisos.");
+      }
+    });
+  }
+
+  function populateNumeralesDirectly() {
+    const articulosSelect = document.getElementById('articulosSelect');
+    const selectedArticleNumber = articulosSelect.value;
+    const base_url = `http://18.117.245.254/servicio_web/detallenumeral/${selectedArticleNumber}/`;
+
+    $.ajax({
+      url: base_url,
+      success: function(result) {
+        if (result.status === 'ok' && result.numerales) {
+          const select = document.getElementById('numeralSelect');
+          select.innerHTML = ''; // Clear existing options
+
+          // Add default option
+          const defaultOption = document.createElement('option');
+          defaultOption.value = '';
+          defaultOption.textContent = 'Seleccione un numeral';
+          select.appendChild(defaultOption);
+
+          // Populate with numerales
+          result.numerales.forEach(numeral => {
+            const option = document.createElement('option');
+            option.value = numeral.NumeroNumeralBD;
+            option.setAttribute('data-description', numeral.DescripcionBDN);
+            const shortenedDescription = numeral.DescripcionBDN.split(' ').slice(0, 10).join(' ');
+            option.textContent = `${shortenedDescription}...`;
+            select.appendChild(option);
+          });
+        } else {
+          console.error("Error: No se encontraron numerales.");
+        }
+      },
+      error: function() {
+        console.error("Error fetching numerales.");
+      }
+    });
+  }
+
+  function mostrarDescripcionCompletaIncisos() {
+    const select = document.getElementById('incisosSelect');
+    const descripcionCompleta = document.getElementById('inciso').children[0];
+    const selectedOption = select.options[select.selectedIndex];
+
+    if (selectedOption.value === '') {
+      descripcionCompleta.textContent = ''; // Clear description if no inciso is selected
+      document.getElementById('hiddenInciso').value = '';
+
+    } else {
+      descripcionCompleta.textContent = `${selectedOption.getAttribute('data-description')}`;
+
+      document.getElementById('hiddenInciso').value = `${selectedOption.getAttribute('data-description')}`;
+
+    }
+
+    // Clear numerales selects and descriptions
+    document.getElementById('numeralSelect').innerHTML = '<option value="">Seleccione un numeral</option>';
+    document.getElementById('numeral').children[0].textContent = '';
+    document.getElementById('hiddenNumeral').value = '';
+  }
+
+  function populateNumerales() {
+    const incisosSelect = document.getElementById('incisosSelect');
+    const selectedIncisoNumber = incisosSelect.value;
+    const base_url = `http://18.117.245.254/servicio_web/detallenumeral/${selectedIncisoNumber}/`;
+
+    $.ajax({
+      url: base_url,
+      success: function(result) {
+        if (result.status === 'ok' && result.numerales) {
+          const select = document.getElementById('numeralSelect');
+          select.innerHTML = ''; // Clear existing options
+
+          // Add default option
+          const defaultOption = document.createElement('option');
+          defaultOption.value = '';
+          defaultOption.textContent = 'Seleccione un numeral';
+          select.appendChild(defaultOption);
+
+          // Populate with numerales
+          result.numerales.forEach(numeral => {
+            const option = document.createElement('option');
+            option.value = numeral.NumeroNumeralBD;
+            option.setAttribute('data-description', numeral.DescripcionBDN);
+            const shortenedDescription = numeral.DescripcionBDN.split(' ').slice(0, 10).join(' ');
+            option.textContent = `${shortenedDescription}...`;
+            select.appendChild(option);
+          });
+        } else {
+          console.error("Error: No se encontraron numerales.");
+        }
+      },
+      error: function() {
+        console.error("Error fetching numerales.");
+      }
+    });
+  }
+
+  function mostrarDescripcionCompletaNumeral() {
+    const select = document.getElementById('numeralSelect');
+    const descripcionCompleta = document.getElementById('numeral').children[0];
+    const selectedOption = select.options[select.selectedIndex];
+
+    if (selectedOption.value === '') {
+      descripcionCompleta.textContent = ''; // Clear description if no numeral is selected
+      document.getElementById('hiddenNumeral').value = '';
+
+    } else {
+      descripcionCompleta.textContent = `${selectedOption.getAttribute('data-description')}`;
+      document.getElementById('hiddenNumeral').value = `${selectedOption.getAttribute('data-description')}`;
+
+    }
+  }
+
+  // Populate articles when the page loads
+  document.addEventListener('DOMContentLoaded', function() {
+    populateArticles();
+
+
+
+  });
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+        &nbsp &nbsp
+
+
+        <div class="card-header text-center" style="background-color: #00008B; color: white;">
+          <strong>BREVE RELATO DE LOS HECHOS Y CIRCUNSTANCIAS DE LA INFRACCIÓN</strong>
+        </div> &nbsp &nbsp
+
+        <div class="row form-group" >
+          <div class="col-xs-12 col-md-11" style="padding-left: 30px;">&nbsp;<strong>{{ infraccion_transito_form.Descripcion.label }}</strong>{{ infraccion_transito_form.Descripcion }}</div>
+          </div>
+
+
+  <div class="card-header text-center" style="background-color: #00008B; color: white;">
+  <strong>LOCALIZACIÓN</strong>
+</div>
+<br>
+<div class="row form-group">
+  <div class="col-xs-12 col-md-6" style="padding-left: 30px;">
+    <div id='map' style="width: 100%; height: 480px;"></div>
+    <input type="button" value="Ubicación Actual" onclick="getUserLocation()" style="background-color:#d31406; color:#FFFFFF;" /> <br>
+  </div>
+  <div class="col-xs-12 col-md-5">
+    <div class="form-group" style="padding-left: 40px;">
+      <div class="col-xs-4" style="margin-top: 30px;">
+        <strong>{{ infraccion_transito_form.Ubicacion.label }}</strong><input type="text" id="Ubicacion" name="Ubicacion" class="form-control"/>
+      </div>
+    </div><br>
+    <div class="form-group" style="padding-left: 30px;">
+      <div class="col-xs-12 col-md-5">
+        <strong>{{ infraccion_transito_form.Latitud.label }}:</strong> &nbsp &nbsp{{ infraccion_transito_form.Latitud }}
+        <br>
+        <br>
+        <strong>{{ infraccion_transito_form.Longitud.label }}:</strong> {{ infraccion_transito_form.Longitud }}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row form-group" style="margin-top: 150px">
+  <style>
+    .coordinates {
+      background: rgba(0,0,0,0.5);
+      color: #fff;
+      position: absolute;
+      bottom: 40px;
+      left: 10px;
+      padding: 5px 10px;
+      margin: 0;
+      font-size: 11px;
+      line-height: 18px;
+      border-radius: 3px;
+      display: none;
+    }
+  </style>
+
+  <script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoiY2FvdGNocmlzIiwiYSI6ImNscjlvNWIzZTA1MHQybHBybHBoNWhhcnYifQ.NOKi-tNhDuHZL_k9xL8Peg';
+    var map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/streets-v11',
+      center: [-79.205955, -4.002798],
+      zoom: 12
+    });
+
+    var marker = new mapboxgl.Marker({
+      draggable: true
+    })
+    .setLngLat([-79.205955, -4.002798])
+    .addTo(map);
+
+    function getUserLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          function(position) {
+            var lngLat = [position.coords.longitude, position.coords.latitude];
+            map.flyTo({ center: lngLat, zoom: 14 });
+            marker.setLngLat(lngLat);
+            updateLocationInputs(lngLat[1], lngLat[0]);
+            reverseGeocode(lngLat);
+          },
+          function(error) {
+            console.error('Error getting user location:', error);
+          }
+        );
+      } else {
+        alert('Geolocation is not supported by this browser.');
+      }
+    }
+
+    function reverseGeocode(lngLat) {
+      fetch('https://api.mapbox.com/geocoding/v5/mapbox.places/' + lngLat[0] + ',' + lngLat[1] + '.json?access_token=' + mapboxgl.accessToken)
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('Ubicacion').value = data.features[0].place_name;
+      })
+      .catch(error => {
+        console.error('Error reverse geocoding:', error);
+      });
+    }
+
+    function onDragEnd() {
+      var lngLat = marker.getLngLat();
+      updateLocationInputs(lngLat.lat, lngLat.lng);
+      reverseGeocode([lngLat.lng, lngLat.lat]);
+    }
+
+    function updateLocationInputs(lat, lng) {
+      document.getElementById("id_Latitud").value = lat;
+      document.getElementById("id_Longitud").value = lng;
+    }
+
+    marker.on('dragend', onDragEnd);
+
+    // Obtener la ubicación del usuario al cargar la página
+    getUserLocation();
+  </script>
+</div>
+
+
+
+<div class="row form-group">
+          <div class="col col-md-3">{{infraccion_transito_form.Inciso.label}}</div>
+          <div class="col-12 col-md-9">{{infraccion_transito_form.Inciso}}</div>
+        </div>
+
+    &nbsp &nbsp 
+
+
+      <div class="card-header text-center" style="background-color: #00008B; color: white;">
+  <strong>EVIDENCIA</strong>
+</div>
+<br>
+
+<div class="row form-group">
+  <div class="col-xs-12 col-md-4 file-input-container">
+    <strong>Seleccione Imagen: </strong><div>
+    <input type="file" name="model_pic" id="model_pic" accept="image/*"  multiple onchange="displayFileNames(this, 'image-file-names')" />
+    <div id="image-file-names" class="file-names"></div>
+  </div> </div>
+  <div class="col-xs-12 col-md-4 file-input-container">
+    <strong>Seleccione Audio: </strong><div>
+    <input type="file" name="model_aud" id="model_aud" accept="audio/*" multiple onchange="displayFileNames(this, 'audio-file-names')" />
+    <div id="audio-file-names" class="file-names"></div>
+  </div></div>
+  <div class="col-xs-12 col-md-4 file-input-container">
+    <strong>Seleccione Video: </strong><div>
+    <input type="file" name="model_vid" id="model_vid" accept="video/*" multiple onchange="displayFileNames(this, 'video-file-names')" />
+    <div id="video-file-names" class="file-names"></div>
+  </div></div>
+</div>
+
+<div class="col-xs-12 col-md-5">
+  <strong style="color: red;">
+    Nota: *Campo Obligatorio
+  </strong>
+</div>
+
+<br>
+<div class="text-center">
+  <button type="submit" class="btn btn-primary" style="background-color:#6aa84f; min-width: 150px; height: 45px;">Registrar</button>
+  &nbsp;&nbsp;&nbsp;
+  <button type="button" onclick="confirmCancel()" data-toggle="tooltip" data-placement="right" title="Ir a Inicio" class="btn" style="background-color: red; color: white; min-width: 150px; height: 45px;">Cancelar</button>
+</div>
+
+
+<script>
+  function displayFileNames(input, elementId) {
+    const files = input.files;
+    let fileNames = [];
+    for (let i = 0; i < files.length; i++) {
+      fileNames.push(files[i].name);
+    }
+    document.getElementById(elementId).textContent = fileNames.length > 0 ? `Archivos seleccionados: ${fileNames.join(', ')}` : '';
+  }
+</script>
+
+
+<script>
+// Establece el valor predeterminado para Hora_Detencion si está vacío a "--:--"
+var horaDetencionField = document.getElementById('Hora_Detencion');
+if (!horaDetencionField.value) {
+    horaDetencionField.value = '00:00';
+}
+
+// Agregar evento para el envío del formulario
+document.getElementById('miFormulario').addEventListener('submit', function(event) {
+    var horaDetencionField = document.getElementById('Hora_Detencion');
+    if (!horaDetencionField.value || horaDetencionField.value === '--:--') {
+        horaDetencionField.value = '--:--';
+    } else if (horaDetencionField.value === '') {
+        horaDetencionField.value = '00:00';
+    }
+    
+    // Simulación de éxito al guardar la información (reemplaza esto con tu lógica real)
+    alert('Guardado con éxito');
+    
+    // Permitir el envío del formulario
+    this.submit();
+});
+</script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<script type="text/javascript">
+  
+    let cedula_agente = $("#CedulaAgente").val()
+    let base_url = "http://18.117.245.254/servicio_web/detalleAgente/"
+    let complete_url = base_url + cedula_agente
+    $.ajax({url: complete_url, success: function(result){
+      $("#cedula").val(result.agente.Cedula);
+      $("#nombres").val(result.agente.Nombres);
+      $("#apellidos").val(result.agente.Apellidos);
+    }});
+
+    let cedula_agente1 = $("#CedulaAgente").val()
+    let base_url1 = "http://18.117.245.254/servicio_web/detallecontador/"
+    let complete_url1 = base_url1 + cedula_agente1
+    $.ajax({url: complete_url1, success: function(result){
+      cont = result.contador.ContadorAgente+1;
+      cod = result.contador.CodigoAgente;
+      codigo = cod+""+cont;
+      $("#id_NumeroInfraccion").val(codigo);
+      $("#ContadorInf").val(cont);
+    }});
+</script>
+
+
+
+<script>
+    // Obtener la hora actual
+  var ahora = new Date();
+  // Formatear la hora y los minutos en formato de 24 horas (HH:MM)
+  var horaActual = ahora.getHours().toString().padStart(2, '0') + ':' + ahora.getMinutes().toString().padStart(2, '0');
+    // Establecer el valor del campo de hora
+  document.getElementById('Hora_Infraccion').value = horaActual;
+</script>
+
+<script>
+    // Obtener la hora actual
+   //var ahora1 = new Date();
+  // Formatear la hora y los minutos en formato de 24 horas (HH:MM)
+  
+    // Establecer el valor del campo de hora
+  document.getElementById('Hora_Detencion').value = '00:00'  # Establecer hora predeterminada a medianoche;
+</script>
+
+<script>
+  var fechaActual = new Date();
+  var dia = parseInt(fechaActual.getDate());
+  var mes = parseInt(fechaActual.getMonth()+1)-1; // Los meses en JavaScript van de 0 a 11
+  var año = parseInt(fechaActual.getFullYear());
+
+  var fecha = new Date(año, mes,dia);
+  var fechaFormateada = fecha.toISOString().slice(0, 10);
+
+  document.getElementById('Fecha_Infraccion').value = fechaFormateada;
+</script>
+
+
+<script>
+document.getElementById('miFormulario').addEventListener('submit', function(event) {
+  
+ 
+
+});
+</script>
+
+
+<script>
+function confirmCancel() {
+  // Muestra un mensaje de confirmación
+  var confirmacion = confirm("¿Estás seguro que quieres cancelar?");
+
+  // Si el usuario confirma, redirige a la página de inicio (index)
+  if (confirmacion) {
+    window.location.href = "{% url 'index' %}";
+  }
+}
+
+</script>
+    <script>
+function confirmLogout() {
+    if (confirm('¿Estás seguro de cerrar sesión?')) {
+        window.location.href = "{% url 'logout' %}";
+    } else {
+        // Si el usuario cancela, no se realiza ninguna acción
+    }
+}
+</script>
+
+
+{% if user.groups.all.0.name == "Agenteadmin" %}
+
+
+{% else %}
+<META HTTP-EQUIV="REFRESH" CONTENT="0; http://18.117.245.254/admin">
+{% endif %}
+
+
+{% endblock body %}

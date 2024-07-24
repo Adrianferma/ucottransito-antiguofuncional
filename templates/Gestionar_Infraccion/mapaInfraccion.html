@@ -1,0 +1,66 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block titulo%}
+Infracción de transito
+{% endblock titulo%}
+{% block body %}
+
+
+<div class="card mt-4">
+  <div class="card-header text-center" style="background-color: #00008B; color: white;">
+    <strong>UBICACIÓN EN EL MAPA<br></strong>
+  </div>
+
+</div>
+
+<div id='map'  style="width: 94%; height: 575px;margin-top:0em"></div>
+
+<script type="text/javascript">
+  mapboxgl.accessToken = 'pk.eyJ1IjoidWNvdCIsImEiOiJjanlxMWRpd3AwZmxvM2RtdWFmdzBpdTd6In0.JqU3fJcJP__fO28mMYnYWg';
+</script>
+
+<script type="text/javascript">
+  var cont  =0
+
+  var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/streets-v11',
+    center: [-79.2042236,-3.99313],
+    zoom: 13
+  });
+
+  {% for i in infraccion %}
+  var latitud = "{{i.Longitud }}"
+  var longitud = "{{i.Latitud }}"
+
+  var popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
+     "<strong>Número de Citación:</strong> {{i.NumeroInfraccion}}"+" <br> <strong>Fecha:</strong> {{i.Fecha_Infraccion}}"+" <br> <strong>Cédula I. Conductor:</strong> {{i.Conductor.CedulaC}}"+" <br> <strong>Nombres: </strong>{{i.Conductor.Nombres}} {{i.Conductor.Apellidos}}"+" <br> <strong>Placa Vehículo:</strong> {{i.Vehiculo.Placa}}"
+);
+
+  var marker = new mapboxgl.Marker({
+    "color": "#f32626",
+    draggable: false,
+  })
+  .setLngLat([latitud.replace(",","."),longitud.replace(",",".")])
+  .setPopup(popup)
+  .addTo(map);
+  {% endfor %}
+</script>
+    <script>
+function confirmLogout() {
+    if (confirm('¿Estás seguro de cerrar sesión?')) {
+        window.location.href = "{% url 'logout' %}";
+    } else {
+        // Si el usuario cancela, no se realiza ninguna acción
+    }
+}
+</script>
+
+{% if user.groups.all.0.name == "Agenteadmin" %}
+
+
+{% else %}
+<META HTTP-EQUIV="REFRESH" CONTENT="0; http://18.117.245.254/admin">
+{% endif %}
+
+{% endblock body %}
