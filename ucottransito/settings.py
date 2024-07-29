@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'p=u*62l=1!w#cf-nzo^2*l^e+43_%i)^1xe44(m@04$syrt$ge'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['18.117.245.254', '127.0.0.1', 'www.ucotcitaciones.com']
 
