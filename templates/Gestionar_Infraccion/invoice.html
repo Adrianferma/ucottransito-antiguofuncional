@@ -149,7 +149,8 @@
             <i style="color:#000000;"><b>Fotografía(s):</b></i><br/>
              <div class="photo-container">
             {% for i in foto|slice:":2" %} <!-- Solo toma las primeras dos fotos -->
-                <img src="./../media/{{ i.model_pic }}" alt="Evidencia"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <img src="{{ i.url }}" alt="Evidencia"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <!-- Depuración: Muestra la URL generada -->
             {% endfor %}<br/>
            
             <b>------------------------------------------------------------------------------------------</b><br/>
