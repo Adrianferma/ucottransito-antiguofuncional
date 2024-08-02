@@ -31,18 +31,28 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 import datetime
 
-
-
 from django.http import HttpResponse
 from .utils import render_to_pdf #created in step 4
 from django.template.loader import get_template
 
+from django.conf import settings
+
 class GeneratePdf(View):
     def get(self, request, *args, **kwargs):
         id = request.GET['Infraccion_Transito']
-        infraccion = Infraccion_Transito.objects.all().filter(NumeroInfraccion=id)
-        foto = MyImage.objects.all().filter(id_Evidencia=id)
-        data = {'hour': datetime.datetime.now(), 'infraccion' : infraccion, 'foto': foto}
+        infraccion = Infraccion_Transito.objects.filter(NumeroInfraccion=id)
+        foto = MyImage.objects.filter(id_Evidencia=id)
+        
+        # Construir URLs absolutas para las imágenes
+        media_url = request.build_absolute_uri(settings.MEDIA_URL)
+        fotos = [{'url': f"{media_url}{i.model_pic}"} for i in foto]
+        
+        data = {
+            'hour': datetime.datetime.now(),
+            'infraccion': infraccion,
+            'foto': fotos,  # Enviamos la lista de URLs absolutas
+            'MEDIA_URL': media_url
+        }
         pdf = render_to_pdf('Gestionar_Infraccion/invoice.html', data)
         return HttpResponse(pdf, content_type='application/pdf')
 
