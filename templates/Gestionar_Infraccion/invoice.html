@@ -143,28 +143,32 @@
             <b>Cédula:</b> &nbsp;&nbsp;&nbsp;&nbsp;{{ i.Agente.Cedula }}<br/>
             {% endfor %}
            
-        </div>
-        <div class='details'><br/>
-            <i>* EVIDENCIA:</i><br/>
-            <i style="color:#000000;"><b>Fotografía(s):</b></i><br/>
-             <div class="photo-container">
-            {% for i in foto|slice:":2" %} <!-- Solo toma las primeras dos fotos -->
-                <img src="{{ i.url }}" alt="Evidencia"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <!-- Depuración: Muestra la URL generada -->
-            {% endfor %}<br/>
-           
-            <b>------------------------------------------------------------------------------------------</b><br/>
-            
-            <b>Reporte generado el:</b> {{ hour }}
+        <div>
 
-            <b>------------------------------------------------------------------------------------------</b><br/>
-        </div>
+            <div>
+    <div class='details'><br/>
+        <i>* EVIDENCIA:</i><br/>
+        <i style="color:#000000;"><b>Fotografía(s):</b></i><br/>
+<div class="photo-container">
+    {% for i in foto %}
+        <img src="{{ i.url }}" alt="Evidencia"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <!-- Depuración: Muestra la URL generada -->
+     
+    {% endfor %}
+</div>
+        <b>------------------------------------------------------------------------------------------</b><br/>
+        <b>Reporte generado el:</b> {{ hour }}<br/>
+        <b>------------------------------------------------------------------------------------------</b><br/>
     </div>
+</div>
+    
+</div>
+
     <div class="column column-middle"></div>
     <div class="column column-right"></div>
     {% if user.groups.all.0.name == "Agenteadmin" %}
     {% else %}
-    <META HTTP-EQUIV="REFRESH" CONTENT="0; https://www.ucotcitaciones.com/admin">
+    <META HTTP-EQUIV="REFRESH" CONTENT="0; https://ucotcitaciones/admin">
     {% endif %}
 </body>
 </html>
