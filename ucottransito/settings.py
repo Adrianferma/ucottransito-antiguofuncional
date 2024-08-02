@@ -25,7 +25,7 @@ SECRET_KEY = 'p=u*62l=1!w#cf-nzo^2*l^e+43_%i)^1xe44(m@04$syrt$ge'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['18.117.245.254', 'www.ucotcitaciones.com', 'ucotcitaciones.com']
+ALLOWED_HOSTS = ['3.135.1.98', 'www.ucotcitaciones.com', 'ucotcitaciones.com']
 
 # Application definition
 
@@ -85,7 +85,7 @@ DATABASES = {
         'NAME': 'newdb',
         'USER': 'newuser',
         'PASSWORD': 'newpass',
-        'HOST': '18.117.245.254',
+        'HOST': '3.135.1.98',
         'PORT': 5432,
         'OPTIONS': {
             'options': '-c timezone=UTC',
