@@ -178,7 +178,7 @@ Infracciones tránsito
     }
 
     // URL base para la consulta de detalles del conductor
-    let base_url = "http://www.ucotcitaciones.com/servicio_web/detalleConductor/";
+    let base_url = "https://www.ucotcitaciones.com/servicio_web/detalleConductor/";
     let complete_url = base_url + cedula_conductor;
 
     // Realizar una solicitud AJAX
@@ -430,7 +430,7 @@ Infracciones tránsito
       return;
     }
 
-    let base_url = "http://www.ucotcitaciones.com/servicio_web/detalleVehiculo/";
+    let base_url = "https://www.ucotcitaciones.com/servicio_web/detalleVehiculo/";
     let complete_url = base_url + placa_vehiculo;
     
     $.ajax({
@@ -621,7 +621,7 @@ Infracciones tránsito
 
 <script type="text/javascript">
   function populateArticles() {
-    const base_url = "http://www.ucotcitaciones.com/servicio_web/todosarticulos/";
+    const base_url = "https://www.ucotcitaciones.com/servicio_web/todosarticulos/";
 
     $.ajax({
       url: base_url,
@@ -688,8 +688,8 @@ Infracciones tránsito
   function populateIncisos() {
     const articulosSelect = document.getElementById('articulosSelect');
     const selectedArticleNumber = articulosSelect.value;
-    const base_url_incisos = `http://www.ucotcitaciones.com/servicio_web/detalleincisos/${selectedArticleNumber}/`;
-    const base_url_numerales = `http://www.ucotcitaciones.com/servicio_web/detallenumerales/${selectedArticleNumber}/`;
+    const base_url_incisos = `https://www.ucotcitaciones.com/servicio_web/detalleincisos/${selectedArticleNumber}/`;
+    const base_url_numerales = `https://www.ucotcitaciones.com/servicio_web/detallenumerales/${selectedArticleNumber}/`;
 
     $.ajax({
       url: base_url_incisos,
@@ -727,7 +727,7 @@ Infracciones tránsito
   function populateNumeralesDirectly() {
     const articulosSelect = document.getElementById('articulosSelect');
     const selectedArticleNumber = articulosSelect.value;
-    const base_url = `http://www.ucotcitaciones.com/servicio_web/detallenumeral/${selectedArticleNumber}/`;
+    const base_url = `https://www.ucotcitaciones.com/servicio_web/detallenumeral/${selectedArticleNumber}/`;
 
     $.ajax({
       url: base_url,
@@ -786,7 +786,7 @@ Infracciones tránsito
   function populateNumerales() {
     const incisosSelect = document.getElementById('incisosSelect');
     const selectedIncisoNumber = incisosSelect.value;
-    const base_url = `http://www.ucotcitaciones.com/servicio_web/detallenumeral/${selectedIncisoNumber}/`;
+    const base_url = `https://www.ucotcitaciones.com/servicio_web/detallenumeral/${selectedIncisoNumber}/`;
 
     $.ajax({
       url: base_url,
@@ -1071,7 +1071,7 @@ document.getElementById('miFormulario').addEventListener('submit', function(even
 <script type="text/javascript">
   
     let cedula_agente = $("#CedulaAgente").val()
-    let base_url = "http://www.ucotcitaciones.com/servicio_web/detalleAgente/"
+    let base_url = "https://www.ucotcitaciones.com/servicio_web/detalleAgente/"
     let complete_url = base_url + cedula_agente
     $.ajax({url: complete_url, success: function(result){
       $("#cedula").val(result.agente.Cedula);
@@ -1080,7 +1080,7 @@ document.getElementById('miFormulario').addEventListener('submit', function(even
     }});
 
     let cedula_agente1 = $("#CedulaAgente").val()
-    let base_url1 = "http://www.ucotcitaciones.com/servicio_web/detallecontador/"
+    let base_url1 = "https://www.ucotcitaciones.com/servicio_web/detallecontador/"
     let complete_url1 = base_url1 + cedula_agente1
     $.ajax({url: complete_url1, success: function(result){
       cont = result.contador.ContadorAgente+1;
@@ -1160,7 +1160,7 @@ function confirmLogout() {
 
 
 {% else %}
-<META HTTP-EQUIV="REFRESH" CONTENT="0; http://www.ucotcitaciones.com/admin">
+<META HTTP-EQUIV="REFRESH" CONTENT="0; https://www.ucotcitaciones.com/admin">
 {% endif %}
 
 
