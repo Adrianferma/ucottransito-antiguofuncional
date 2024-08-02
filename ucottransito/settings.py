@@ -131,7 +131,7 @@ IMPORT_EXPORT_USE_TRANSACTIONS = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static/'))  # This is correct for development
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static/'),)  # This is correct for development
 
 
 # STATIC_ROOT is typically set to a different directory for collected static files
