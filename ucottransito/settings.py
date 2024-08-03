@@ -135,7 +135,7 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static/'),)  # This is correct for d
 
 
 # STATIC_ROOT is typically set to a different directory for collected static files
-#STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_collected')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_collected')
 STATIC_URL = '/static/'
 
 # Media files (uploads)
