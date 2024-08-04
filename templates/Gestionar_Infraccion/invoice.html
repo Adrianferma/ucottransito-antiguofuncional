@@ -150,14 +150,14 @@
         <i>* EVIDENCIA:</i><br/>
         <i style="color:#000000;"><b>Fotografía(s):</b></i><br/>
 <div class="photo-container">
-    {% for i in foto %}
+    {% for i in foto|slice:":2" %} <!-- Solo toma las primeras dos fotos -->
         <img src="{{ i.url }}" alt="Evidencia"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <!-- Depuración: Muestra la URL generada -->
      
     {% endfor %}<br/>
 </div>
         <b>------------------------------------------------------------------------------------------</b><br/>
-        <b>Reporte generado el:</b> {{ hour }}<br/>
+        <b>Reporte generado el:</b> {{ hour }}
         <b>------------------------------------------------------------------------------------------</b><br/>
     </div>
 </div>
