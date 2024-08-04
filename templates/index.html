@@ -23,8 +23,7 @@
   <style>
     body { margin:0; padding:0; }
     
-    #map { position:absolute; top:28%; bottom:0; width:94%; height:86%; }
-
+    #map { position:absolute; top:14%; bottom:0; width:94%; height:86%; }
     #marker {
       background-size: cover;
       width: 50px;
@@ -58,16 +57,6 @@
     .mapboxgl-canvas {
       cursor: pointer; /* Cambia aquí a tu cursor deseado */
     }
-      .user-display {
-    font-size: 16px;
-    font-family: 'Open Sans', sans-serif;
-    color: #333; /* Color de texto opcional */
-  }
-  .map-container {
-  padding: 0px 0px 0px 0px; /* Añade 50px de espacio inferior */
-  background-color: #f8f9fa;
-}
-
   </style>
 </head>
 
@@ -97,9 +86,6 @@
               <li><i class="fa fa-search"></i><a href="{% url 'Gestionar_Informacion:buscar_conductor' %}">Conductor</a></li>
             </ul>
           </li>
-          <li>
-            <a class="menutoggle text-danger" onclick="confirmLogout();">Cerrar Sesión <i class="menu-icon fa fa-sign-out"></i></a>
-          </li>
         </ul>
       </div><!-- /.navbar-collapse -->
     </nav>
@@ -114,19 +100,14 @@
           <i class="fa fa-angle-double-right my-float"></i>
         </a>
         <a class="navbar-brand text-dark" style="vertical-align:middle;" href="./">
-          <img src="{% static 'images/logos3.png' %}" style="width:250px" alt="Logo"><span class="user-display">
-  &nbsp;&nbsp;{{ logged_in_user.first_name }} {{ logged_in_user.last_name }}
-</span>
+          <img src="{% static 'images/logos3.png' %}" style="width:250px" alt="Logo"> <strong>UCOT-LOJA</strong>
         </a>
-       
+       <a class="float right menutoggle text-danger" onclick="confirmLogout();">Cerrar Sesión <i class="fa fa-sign-out"></i></a>
+        <a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Bienvenido:</strong> <input type="text" name="user_display" value="&nbsp;&nbsp;{{ logged_in_user.first_name }} {{ logged_in_user.last_name }}" disabled style="width: 300px; font-size: 16px;"></a>
       </div>
     </header>
-
     {% block body %}
-
-      <div class="card-header text-center  bg-white" >
-        
-<form action="#" method="post" enctype="multipart/form-data" class="form-horizontal">
+    <form action="#" method="post" enctype="multipart/form-data" class="form-horizontal">
       {% csrf_token %}
       <div class="form-group text-center">
     <img src="{% static 'images/pinrojo.jpg' %}" style="width:40px" alt="Logo">
@@ -142,38 +123,15 @@
     <input type="date" id="FechaFin" name="FechaFin" placeholder="Fecha Fin"/>
     <input type="submit" value="Buscar" class="btn btn-primary" style="background-color:#d31406">
     &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
+    
 
-
-      </div>
 
 
     <i style="color:#FF0000;" id="alerta"><strong>Citaciones encontradas: <span id="contador"></span></strong></i>
 
-   <div class="card mt-4">
-        <div class="card-header text-center" style="background-color: #00008B; color: white;">
-          <strong>MAPA</strong>
-        </div>
-      </div>
 
 
 
-
-    <div class="map-container">
-      <div id='map'>
-        <div id="menu">
-          <input id="streets-v11" type="radio" name="rtoggle" value="streets" checked="checked" />
-          <label for="streets">Streets</label>
-          <input id="light-v10" type="radio" name="rtoggle" value="light" />
-          <label for="light">Light</label>
-          <input id="dark-v10" type="radio" name="rtoggle" value="dark" />
-          <label for="dark">Dark</label>
-          <input id="outdoors-v11" type="radio" name="rtoggle" value="outdoors" />
-          <label for="outdoors">Outdoors</label>
-          <input id="satellite-v9" type="radio" name="rtoggle" value="satellite" />
-          <label for="satellite">Satellite</label>
-        </div>
-      </div>
-    </div>
 
 </div>
 
@@ -222,6 +180,25 @@
   });
 </script>
 
+
+
+
+
+
+      <div id='map'>
+        <div id="menu">
+          <input id="streets-v11" type="radio" name="rtoggle" value="streets" checked="checked" />
+          <label for="streets">Streets</label>
+          <input id="light-v10" type="radio" name="rtoggle" value="light" />
+          <label for="light">Light</label>
+          <input id="dark-v10" type="radio" name="rtoggle" value="dark" />
+          <label for="dark">Dark</label>
+          <input id="outdoors-v11" type="radio" name="rtoggle" value="outdoors" />
+          <label for="outdoors">Outdoors</label>
+          <input id="satellite-v9" type="radio" name="rtoggle" value="satellite" />
+          <label for="satellite">Satellite</label>
+        </div>
+      </div>
 
 
 
@@ -291,19 +268,7 @@ function confirmLogout() {
     {% endblock body %}
   </div>
   <!-- /.site-footer -->
-
-
-
-
-    </header>
-
-
-
-
 </div>
-
-
-
 <!-- /#right-panel -->
 
 <!-- Scripts -->
@@ -315,3 +280,4 @@ function confirmLogout() {
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 
 </body>
+</html>
